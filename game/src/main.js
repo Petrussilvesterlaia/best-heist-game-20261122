@@ -1,7 +1,7 @@
 // Velvet Vault — the boot: find the canvas, wire the world, the renderer, the input and the
 // sound together, and run the night. Three rooms of the Aurum Trust, one fixed clock tick at
-// a time. It also stages the ?shot= scenes the screenshots are taken from, in the same way
-// the starter taught it to: play the scene, paint it twice, then raise __shotReady.
+// a time. It also stages the ?shot= scenes the screenshots are taken from: play the scene,
+// paint it twice, then raise __shotReady.
 
 import {
   BEST_KEY, HUD_H, SCREEN_CAUGHT, SCREEN_CLEAR, SCREEN_OVER, SCREEN_PAUSED, SCREEN_PLAY,

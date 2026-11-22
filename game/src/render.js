@@ -70,7 +70,7 @@ export function createRenderer(canvas) {
   const ctx = canvas.getContext('2d');
   const speckles = specklePoints(260);
 
-  function drawFloor(state) {
+  function drawFloor() {
     for (let ty = 0; ty < ROWS; ty += 1) {
       for (let tx = 0; tx < COLS; tx += 1) {
         ctx.fillStyle = (tx + ty) % 2 === 0 ? FLOOR_A : FLOOR_B;
@@ -87,7 +87,6 @@ export function createRenderer(canvas) {
     ctx.strokeStyle = 'rgba(201,162,39,0.35)';
     ctx.lineWidth = 2;
     ctx.strokeRect(TILE + 5, TILE + 5, WORLD_W - 2 * TILE - 10, WORLD_H - 2 * TILE - 10);
-    void state;
   }
 
   function drawExit(state) {
@@ -224,7 +223,7 @@ export function createRenderer(canvas) {
     }
   }
 
-  function drawGuard(state, guard) {
+  function drawGuard(guard) {
     const { x, y } = guard;
     ctx.fillStyle = 'rgba(0,0,0,0.35)';
     ctx.beginPath();
@@ -496,7 +495,7 @@ export function createRenderer(canvas) {
     drawHud(state, best);
     ctx.save();
     ctx.translate(0, HUD_H);
-    drawFloor(state);
+    drawFloor();
     drawExit(state);
     for (const piece of state.level.loot) if (!piece.taken) drawLootPiece(state, piece);
     for (const camera of state.cameras) drawCone(state, camera.x, camera.y, camera.angle, CAMERA_CONE_HALF, CAMERA_CONE_RANGE, camera.seeing > 0, true);
@@ -504,7 +503,7 @@ export function createRenderer(canvas) {
     drawWalls(state);
     drawCoin(state);
     for (const camera of state.cameras) drawCamera(state, camera);
-    for (const guard of state.guards) drawGuard(state, guard);
+    for (const guard of state.guards) drawGuard(guard);
     drawThief(state);
     // A red edge creeps in as the alarm climbs: the room itself starts to feel watched.
     if (state.alarm > 45) {

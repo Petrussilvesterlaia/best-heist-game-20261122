@@ -1,6 +1,7 @@
-// Velvet Vault — the world: Wren, the Wardens on their beats, the sweeping cameras, the loot,
-// the alarm, and the rules that move them. This file is the whole game as numbers; it never
-// touches the page, so a test can play it headlessly and the renderer only paints what is here.
+// Velvet Vault — the world: Wren, the Wardens on their beats, the sweeping cameras, the
+// loot, the alarm, and the rules that move them. This file is the whole game as numbers; it
+// never touches the page, so a test can play it headlessly and the renderer only paints
+// what is here.
 //
 // One step takes the thief's input ({dx, dy, sneak, coinAt}) and returns the events that
 // happened in it, as a bitmask main.js turns into sounds and screen changes.
@@ -25,8 +26,8 @@ export const EVENT_COIN = 32;
 /** How far a body of `radius` at (x, y) may slide along one axis before a solid tile stops it. */
 function slideAxis(level, x, y, radius, delta, axis) {
   if (delta === 0) return axis === 'x' ? x : y;
-  let nx = axis === 'x' ? x + delta : x;
-  let ny = axis === 'y' ? y + delta : y;
+  const nx = axis === 'x' ? x + delta : x;
+  const ny = axis === 'y' ? y + delta : y;
   // The four corners of the body's box, nudged in by a pixel so hugging a wall is allowed.
   const probes = [
     [nx - radius + 1, ny - radius + 1],
@@ -40,13 +41,13 @@ function slideAxis(level, x, y, radius, delta, axis) {
   return axis === 'x' ? nx : ny;
 }
 
-/** Move a body by (dx, dy), sliding along walls: try the x axis, then the y axis. */
+/** Move a body by (dx, dy), sliding along walls: the x axis first, then the y axis. */
 export function moveBody(level, body, dx, dy) {
   body.x = slideAxis(level, body.x, body.y, body.radius, dx, 'x');
   body.y = slideAxis(level, body.x, body.y, body.radius, dy, 'y');
 }
 
-/** A Warden at the start of his beat: on his first waypoint, facing along it. */
+/** A Warden at the start of his beat: standing on his first waypoint, facing along it. */
 function makeGuard(spec) {
   const [first, second] = spec.waypoints;
   return {
@@ -71,7 +72,7 @@ function makeCamera(spec) {
 /**
  * The whole game state and the verbs that change it. `loadLevel(n)` sets a room up;
  * `step(dt, input)` plays one fixed step and returns the events in it; `caught()` and
- * `finishLevel()` settle what a caught or a clear means for the score.
+ * `finishLevel()` settle what a catch or a clear means for the score.
  */
 export function createWorld() {
   const state = {
@@ -150,7 +151,7 @@ export function createWorld() {
     if (guard.wait > 0) {
       guard.wait -= dt;
       // At the end of a beat a Warden scans: his cone sweeps a little either side of the
-      // way he came, which is the moment a patient thief waits for — or uses.
+      // way he came — the moment a patient thief waits for, or uses.
       guard.facing = guard.scanBase + Math.sin(state.levelTime * 1.7 + guard.waypoints[0].y) * 0.5;
       return;
     }

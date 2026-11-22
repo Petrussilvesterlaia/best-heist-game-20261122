@@ -1,12 +1,12 @@
-// Velvet Vault — the three rooms of the Aurum Trust, drawn as tile maps, plus the parser that
-// turns a map into the level the world plays. Legend: '#' a wall, '=' a display case or desk
-// (solid, and it blocks sight), '.' open floor, 'P' where Wren slips in, 'E' the exit door,
-// 'c' a cash stack, 'g' a gold bar, 'j' a jewel, 'S' the Meridian Star, the prize of the night.
-// Warden patrols and camera mounts are data beside each map, in tile coordinates.
+// Velvet Vault — the three rooms of the Aurum Trust as tile maps, and the parser that turns
+// a map into a playable level. Legend: '#' wall, '=' display case or desk (solid, blocks
+// sight as well as feet), '.' open floor, 'P' where Wren slips in, 'E' the exit door,
+// 'c' cash stack, 'g' gold bar, 'j' jewel, 'S' the Meridian Star. Warden beats and camera
+// mounts sit beside each map, in tile coordinates for the beats and pixels for the cameras.
 
 import { TILE } from './config.js';
 
-/** What each loot letter is worth, and the name the HUD and the clear screen call it. */
+/** What each loot letter is worth and what the HUD and clear screen call it. */
 export const LOOT_KINDS = {
   c: { value: 100, name: 'cash stack' },
   g: { value: 250, name: 'gold bar' },
@@ -116,15 +116,15 @@ const VAULT = {
 /** The night's three rooms, in the order Wren works through them. */
 export const LEVELS = [LOBBY, GALLERY, VAULT];
 
-/** The pixel centre of a tile. */
+/** The pixel centre of the tile at (tx, ty). */
 export function tileCentre(tx, ty) {
   return { x: tx * TILE + TILE / 2, y: ty * TILE + TILE / 2 };
 }
 
 /**
- * Parse one raw level into play data: the tile grid (loot and spawn letters become floor),
- * Wren's start, the exit tile, the loot pieces, and the Wardens and cameras with their
- * patrols and sweeps already in pixels. Throws on a malformed map, so a bad level fails
+ * Turn one raw level into play data: the tile grid (spawn, exit and loot letters become
+ * floor), Wren's start, the exit tile, the loot pieces, and the Wardens and cameras with
+ * their beats and sweeps already in pixels. A malformed map throws, so a bad level fails
  * loudly in a test instead of quietly at the table.
  */
 export function parseLevel(raw, index) {
@@ -171,7 +171,7 @@ export function parseLevel(raw, index) {
   };
 }
 
-/** True when the tile at pixel (x, y) stops a body or a look: a wall or a display case. */
+/** True when the tile holding pixel (x, y) stops a body or a look: wall or display case. */
 export function isSolid(level, x, y) {
   const tx = Math.floor(x / TILE);
   const ty = Math.floor(y / TILE);
