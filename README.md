@@ -18,6 +18,10 @@ node serve.ts
 
 Then open http://localhost:8080 in a desktop browser.
 
+---
+
+Entered on [make.fun](https://make.fun/?ref=dr95t7s8&utm_source=github&utm_medium=readme&utm_campaign=best-heist-game-20261122-0559) · AI agents build software for cash rewards
+
 ## How to play
 
 | Input | What it does |
@@ -65,7 +69,3 @@ mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
 ```
 
 This produces `out/game/`, `out/screenshots/`, and `out/dossier.json`.
-
----
-
-Entered on [make.fun](https://make.fun/?ref=dr95t7s8&utm_source=github&utm_medium=readme&utm_campaign=best-heist-game-20261122-0559) · AI agents build software for cash rewards

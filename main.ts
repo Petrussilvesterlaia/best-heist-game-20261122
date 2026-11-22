@@ -1,56 +1,42 @@
-// Velvet Vault — the build the graders run. It carries the finished heist game (game/) and
-// its screenshot set (screenshots/) into the output directory and writes the dossier that
-// describes them, using the kit's own dossier builder so the manifest always matches the
-// bytes on disk. Nothing here invents game content; the game lives under game/ and is
-// played straight from those files.
+// Velvet Vault — the hand-in program (Node 22, standard library only).
 //
-// Run it the way the kit prescribes: node main.ts, with MAKEFUN_OUTPUT_DIR naming the
-// destination when /output is not writable.
+// The game is this directory's game/ folder, plain static files a desktop
+// browser loads offline (game/index.html and its ES modules, no library and
+// no network request), and this program hands it in: it copies game/ and
+// screenshots/ from beside this file to /output and writes
+// /output/dossier.json, the summary the judge reads, with the vendored
+// make.fun library. buildDossier returns the dossier bytes; this file writes
+// them out.
 //
-// Revision note: the first version of this file wrote the dossier text the builder returns,
-// which testing confirmed (two runs into two directories produced byte-identical trees, and
-// the written dossier.json byte-matched a fresh buildDossier call). This second version
-// keeps that and adds one piece of hygiene the first lacked: before copying, it clears
-// any previous game/ and screenshots/ trees in the output directory, so a rebuild never
-// ships a file the entry no longer has — a renamed screenshot, say — lingering beside the
-// new ones. The dossier is still written last, from the tree as it now stands.
+// Serve it locally with `node serve.ts`, then open http://localhost:8080.
+// Outside the grader's container, MAKEFUN_OUTPUT_DIR stands in for /output:
+//   mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
 
-import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
-import { fileURLToPath } from "node:url";
-import { buildDossier } from "./vendor/makefun-game.ts";
+import { cpSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { buildDossier } from './vendor/makefun-game.ts';
 
-// This file's own folder, resolved the way the kit's starter resolves it.
-const here = fileURLToPath(new URL(".", import.meta.url));
+const here = fileURLToPath(new URL('.', import.meta.url));
+const out = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
 
-// Where the entry lands: the grader's /output when it is offered, else the folder the
-// MAKEFUN_OUTPUT_DIR override names.
-const out = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
-
-// The game itself, copied as-is: index.html plus every script it loads under src/.
-// The screenshots travel beside it, named as shots.json describes them; the folder is
-// created even before its pictures arrive so the copy below has somewhere to land.
-// Any previous copies are cleared first, so nothing stale survives a rebuild.
 mkdirSync(out, { recursive: true });
-rmSync(join(out, "game"), { recursive: true, force: true });
-rmSync(join(out, "screenshots"), { recursive: true, force: true });
-cpSync(join(here, "game"), join(out, "game"), { recursive: true });
-mkdirSync(join(out, "screenshots"), { recursive: true });
-if (existsSync(join(here, "screenshots"))) {
-  cpSync(join(here, "screenshots"), join(out, "screenshots"), { recursive: true });
+cpSync(join(here, 'game'), join(out, 'game'), { recursive: true });
+mkdirSync(join(out, 'screenshots'), { recursive: true });
+if (existsSync(join(here, 'screenshots'))) {
+  cpSync(join(here, 'screenshots'), join(out, 'screenshots'), { recursive: true });
 }
 
-// The dossier: the kit builder walks the copied tree, measures every file against the
-// entry limits, and returns the dossier text; writing it here is this program's job.
-// The caps are the scorer's own — an entry the scorer would refuse is refused here
-// first, while it can still be fixed.
-writeFileSync(
-  join(out, "dossier.json"),
-  buildDossier(out, {
-    text_max_bytes: 163840,
-    screenshots: { max: 4, max_bytes: 262144 },
-    game_max_files: 993,
-    game_max_bytes: 50331648,
-    game_path_max_bytes: 1000,
-  }),
-);
+// The scorer's own caps: only text_max_bytes shapes the bytes; the others
+// refuse an entry the scorer would refuse (more than 4 screenshots or one
+// over 256 KiB; more than 993 files in game/ or 48 MiB of game files, in
+// all, or a path under game/ over 1000 bytes).
+const dossier = buildDossier(out, {
+  text_max_bytes: 163840,
+  screenshots: { max: 4, max_bytes: 262144 },
+  game_max_files: 993,
+  game_max_bytes: 50331648,
+  game_path_max_bytes: 1000,
+});
+writeFileSync(join(out, 'dossier.json'), dossier);
+console.log(`wrote ${out}/dossier.json (${dossier.length} bytes) from game/ and screenshots/`);
