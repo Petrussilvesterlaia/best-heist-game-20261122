@@ -1,13 +1,18 @@
-// Velvet Vault — the boot: find the canvas, wire the world, the renderer, the input and the
-// sound together, and run the night. Three rooms of the Aurum Trust, one fixed clock tick at
-// a time. It also stages the ?shot= scenes the screenshots are taken from: play the scene,
-// paint it twice, then raise __shotReady.
+// Velvet Vault — the boot.
+//
+// Find the canvas, wire the world, the renderer, the input and the sound
+// together, and run the night: three rooms of the Aurum Trust, one fixed
+// clock tick at a time. It also stages the ?shot= scenes the screenshots are
+// taken from: play the scene, paint it twice, then raise __shotReady.
 
 import {
-  BEST_KEY, HUD_H, SCREEN_CAUGHT, SCREEN_CLEAR, SCREEN_OVER, SCREEN_PAUSED, SCREEN_PLAY,
-  SCREEN_TITLE, SCREEN_WIN, STEP, WORLD_H, WORLD_W,
+  BEST_KEY, HUD_H, SCREEN_CAUGHT, SCREEN_CLEAR, SCREEN_OVER, SCREEN_PAUSED,
+  SCREEN_PLAY, SCREEN_TITLE, SCREEN_WIN, STEP, WORLD_H, WORLD_W,
 } from './config.js';
-import { createWorld, EVENT_CAUGHT, EVENT_CLEAR, EVENT_COIN, EVENT_LOOT, EVENT_SEEN, EVENT_STAR } from './world.js';
+import {
+  createWorld, EVENT_CAUGHT, EVENT_CLEAR, EVENT_COIN, EVENT_LOOT,
+  EVENT_SEEN, EVENT_STAR,
+} from './world.js';
 import { createRenderer } from './render.js';
 import { createInput, ACTION_CONFIRM, ACTION_PAUSE, ACTION_RESTART } from './input.js';
 import { createSound } from './sound.js';
@@ -98,8 +103,9 @@ function runGame() {
     backlog = Math.min(backlog + (now - last) / 1000, 0.25);
     last = now;
     const actions = input.takeActions();
-    // A click that pressed a menu button also aimed a coin; off the play screen it is
-    // drained, so starting a room never begins with a throw nobody meant.
+    // A click that pressed a menu button also aimed a coin; off the play
+    // screen it is drained, so starting a room never begins with a throw
+    // nobody meant.
     if (screen !== SCREEN_PLAY) input.takeCoin();
     while (backlog >= STEP) {
       backlog -= STEP;
@@ -146,8 +152,8 @@ function runGame() {
   requestAnimationFrame(frame);
 }
 
-// A staged screenshot wins over the live game: set the scene, paint it twice (the second
-// paint is the frame the screenshot keeps), and say so.
+// A staged screenshot wins over the live game: set the scene, paint it
+// twice (the second paint is the frame the screenshot keeps), and say so.
 const shot = params.get('shot');
 if (shot) {
   screen = stageShot(shot, world);

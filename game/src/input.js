@@ -1,7 +1,9 @@
-// Velvet Vault — hands: the keyboard walks Wren (WASD or the arrow keys), Shift makes her
-// sneak, and the mouse aims a thrown coin (a click, or Q, tosses one toward the pointer).
-// Space and Enter confirm, P or Esc pauses, R restarts a room. The input only reports; the
-// world decides what any of it means.
+// Velvet Vault — hands.
+//
+// The keyboard walks Wren (WASD or the arrow keys), Shift makes her sneak,
+// and the mouse aims a thrown coin (a click, or Q, tosses one toward the
+// pointer). Space and Enter confirm, P or Esc pauses, R restarts a room.
+// The input only reports; the world decides what any of it means.
 
 export const ACTION_CONFIRM = 1;
 export const ACTION_PAUSE = 2;
@@ -15,9 +17,10 @@ const MOVE_KEYS = {
 };
 
 /**
- * Watch a canvas for keys and the pointer. Returns the three things the loop asks each
- * frame: direction() (the held movement keys as a vector), sneak() (Shift held), and
- * takeActions() / takeCoin() (one-shot events since the last frame, consumed by reading).
+ * Watch a canvas for keys and the pointer. Returns the three things the loop
+ * asks each frame: direction() (the held movement keys as a vector),
+ * sneak() (Shift held), and takeActions() / takeCoin() (one-shot events
+ * since the last frame, consumed by reading).
  */
 export function createInput(canvas) {
   const held = new Set();

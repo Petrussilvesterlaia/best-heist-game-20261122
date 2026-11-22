@@ -1,7 +1,10 @@
-// Velvet Vault — ears: a pocketful of WebAudio bleeps, every one synthesised on the spot, no
-// sound files. A coin's ring, the soft tick of loot going into the bag, the rising whine
-// while a cone holds Wren, the flat sting of being caught and the little arpeggio of a clean
-// getaway. The context is only opened after a first click or keypress, as browsers require.
+// Velvet Vault — ears.
+//
+// A pocketful of WebAudio bleeps, every one synthesised on the spot, no
+// sound files: a coin's ring, the soft tick of loot going into the bag, the
+// rising whine while a cone holds Wren, the flat sting of being caught, and
+// the little arpeggio of a clean getaway. The audio context only opens after
+// a first click or keypress, as browsers require.
 
 /** One oscillator note: frequency, seconds, shape, loudness, and a slide if it bends. */
 function note(context, destination, { freq, dur, type = 'square', gain = 0.05, slideTo = null, at = 0 }) {

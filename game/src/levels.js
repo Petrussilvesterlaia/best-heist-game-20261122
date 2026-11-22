@@ -1,12 +1,15 @@
-// Velvet Vault — the three rooms of the Aurum Trust as tile maps, and the parser that turns
-// a map into a playable level. Legend: '#' wall, '=' display case or desk (solid, blocks
-// sight as well as feet), '.' open floor, 'P' where Wren slips in, 'E' the exit door,
-// 'c' cash stack, 'g' gold bar, 'j' jewel, 'S' the Meridian Star. Warden beats and camera
-// mounts sit beside each map, in tile coordinates for the beats and pixels for the cameras.
+// Velvet Vault — the three rooms of the Aurum Trust.
+//
+// Each room is a tile map plus the patrols and cameras that watch it.
+// Legend: '#' a wall, '=' a display case or desk (solid, and it blocks sight),
+// '.' open floor, 'P' where Wren slips in, 'E' the exit door, 'c' a cash
+// stack, 'g' a gold bar, 'j' a jewel, 'S' the Meridian Star. Warden beats and
+// camera mounts are listed beside the map, in tile coordinates for beats and
+// pixels for mounts.
 
 import { TILE } from './config.js';
 
-/** What each loot letter is worth and what the HUD and clear screen call it. */
+/** What each loot letter is worth, and the name the HUD calls it by. */
 export const LOOT_KINDS = {
   c: { value: 100, name: 'cash stack' },
   g: { value: 250, name: 'gold bar' },
@@ -116,16 +119,17 @@ const VAULT = {
 /** The night's three rooms, in the order Wren works through them. */
 export const LEVELS = [LOBBY, GALLERY, VAULT];
 
-/** The pixel centre of the tile at (tx, ty). */
+/** The pixel centre of the tile at column tx, row ty. */
 export function tileCentre(tx, ty) {
   return { x: tx * TILE + TILE / 2, y: ty * TILE + TILE / 2 };
 }
 
 /**
- * Turn one raw level into play data: the tile grid (spawn, exit and loot letters become
- * floor), Wren's start, the exit tile, the loot pieces, and the Wardens and cameras with
- * their beats and sweeps already in pixels. A malformed map throws, so a bad level fails
- * loudly in a test instead of quietly at the table.
+ * Turn one raw room into play data: the tile grid (spawn, exit and loot
+ * letters become open floor), Wren's start, the exit tile, the loot pieces,
+ * and the Wardens and cameras with beats and sweeps already in pixels.
+ * A malformed map throws, so a bad room fails loudly in a test, never
+ * quietly in front of a player.
  */
 export function parseLevel(raw, index) {
   const grid = [];
@@ -145,7 +149,14 @@ export function parseLevel(raw, index) {
         line += '.';
       } else if (LOOT_KINDS[ch]) {
         const at = tileCentre(tx, ty);
-        loot.push({ x: at.x, y: at.y, kind: ch, value: LOOT_KINDS[ch].value, name: LOOT_KINDS[ch].name, taken: false });
+        loot.push({
+          x: at.x,
+          y: at.y,
+          kind: ch,
+          value: LOOT_KINDS[ch].value,
+          name: LOOT_KINDS[ch].name,
+          taken: false,
+        });
         line += '.';
       } else {
         line += ch;
@@ -153,8 +164,10 @@ export function parseLevel(raw, index) {
     }
     grid.push(line);
   }
-  if (!start || !exit) throw new Error(`level ${index}: map needs a P and an E`);
-  if (!loot.some((piece) => piece.kind === 'S')) throw new Error(`level ${index}: map needs the Meridian Star (S)`);
+  if (!start || !exit) throw new Error(`level ${index}: a map needs a P and an E`);
+  if (!loot.some((piece) => piece.kind === 'S')) {
+    throw new Error(`level ${index}: a map needs the Meridian Star (S)`);
+  }
   return {
     index,
     name: raw.name,
@@ -171,7 +184,7 @@ export function parseLevel(raw, index) {
   };
 }
 
-/** True when the tile holding pixel (x, y) stops a body or a look: wall or display case. */
+/** True when the tile holding pixel (x, y) stops a body or a look. */
 export function isSolid(level, x, y) {
   const tx = Math.floor(x / TILE);
   const ty = Math.floor(y / TILE);

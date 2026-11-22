@@ -1,13 +1,17 @@
-// Velvet Vault — the painting: everything the player sees, drawn from the world state and
-// nothing else. Marble floor and brass trim for the Aurum Trust; display cases that read as
-// cover at a glance; Warden cones in amber that flare red the moment they hold Wren; camera
-// cones in steel blue; loot that glitters; and a HUD whose alarm meter is the loudest thing
-// on the screen, because it is the thing that gets you caught.
+// Velvet Vault — the painting.
+//
+// Everything the player sees, drawn from the world state and nothing else.
+// Marble floor and brass trim for the Aurum Trust; display cases that read
+// as cover at a glance; Warden cones in amber that flare red the moment they
+// hold Wren; camera cones in steel blue; loot that glitters; and a HUD whose
+// alarm meter is the loudest thing on the screen, because it is the thing
+// that gets you caught.
 
 import {
-  ALARM_MAX, CANVAS_H, CANVAS_W, COLS, GUARD_CONE_HALF, GUARD_CONE_RANGE, CAMERA_CONE_HALF,
-  CAMERA_CONE_RANGE, HUD_H, MAX_STRIKES, ROWS, SCREEN_CAUGHT, SCREEN_CLEAR, SCREEN_OVER,
-  SCREEN_PAUSED, SCREEN_TITLE, SCREEN_WIN, TILE, WORLD_H, WORLD_W,
+  ALARM_MAX, CANVAS_H, CANVAS_W, COLS, GUARD_CONE_HALF, GUARD_CONE_RANGE,
+  CAMERA_CONE_HALF, CAMERA_CONE_RANGE, HUD_H, MAX_STRIKES, ROWS,
+  SCREEN_CAUGHT, SCREEN_CLEAR, SCREEN_OVER, SCREEN_PAUSED, SCREEN_TITLE,
+  SCREEN_WIN, TILE, WORLD_H, WORLD_W,
 } from './config.js';
 import { conePolygon } from './vision.js';
 
@@ -23,7 +27,7 @@ const RED = '#ff5347';
 const PAPER = '#eef1f8';
 const MUTE = '#9aa5bd';
 
-/** A tiny deterministic scatter for the floor's speckle, so every frame agrees. */
+/** A deterministic scatter for the floor's speckle, so every frame agrees. */
 function specklePoints(count) {
   const points = [];
   let seed = 1234567;
@@ -31,7 +35,9 @@ function specklePoints(count) {
     seed = (seed * 1103515245 + 12345) % 2147483648;
     return seed / 2147483648;
   };
-  for (let i = 0; i < count; i += 1) points.push({ x: next() * WORLD_W, y: next() * WORLD_H, r: next() * 1.6 + 0.4 });
+  for (let i = 0; i < count; i += 1) {
+    points.push({ x: next() * WORLD_W, y: next() * WORLD_H, r: next() * 1.6 + 0.4 });
+  }
   return points;
 }
 
@@ -206,7 +212,7 @@ export function createRenderer(canvas) {
           ctx.fillStyle = 'rgba(255,255,255,0.06)';
           ctx.fillRect(x, y + TILE - 4, TILE, 4);
         } else if (ch === '=') {
-          // A display case: brass base, glass top — cover you can hide behind, drawn low.
+          // A display case: brass base, glass top — cover you can hide behind.
           ctx.fillStyle = 'rgba(0,0,0,0.3)';
           roundRect(ctx, x + 4, y + 8, TILE - 4, TILE - 4, 6);
           ctx.fill();
@@ -223,7 +229,7 @@ export function createRenderer(canvas) {
     }
   }
 
-  function drawGuard(guard) {
+  function drawGuard(state, guard) {
     const { x, y } = guard;
     ctx.fillStyle = 'rgba(0,0,0,0.35)';
     ctx.beginPath();
@@ -299,7 +305,7 @@ export function createRenderer(canvas) {
       ctx.textAlign = 'center';
       ctx.fillText('$', bx, by + 3.5);
     }
-    // Hooded body in deep teal, face toward the way she moves, crimson scarf at the neck.
+    // Hooded body in deep teal, face toward the way she moves, crimson scarf.
     ctx.fillStyle = '#0f3d3a';
     ctx.beginPath();
     ctx.arc(x, y, 13, 0, Math.PI * 2);
@@ -350,7 +356,7 @@ export function createRenderer(canvas) {
     ctx.fillRect(0, HUD_H - 3, CANVAS_W, 3);
     ctx.textAlign = 'left';
 
-    // The alarm meter: labelled, wide, and coloured by how close the night is to over.
+    // The alarm meter: labelled, wide, coloured by how close the night is to over.
     ctx.fillStyle = MUTE;
     ctx.font = '700 13px system-ui, sans-serif';
     ctx.fillText('ALARM', 18, 26);
@@ -451,7 +457,10 @@ export function createRenderer(canvas) {
         { text: 'Click or press Enter to begin the night', size: 19, bold: true },
       ], BRASS);
     } else if (screen === SCREEN_PAUSED) {
-      panel([{ text: 'PAUSED', size: 34, bold: true, color: GOLD }, { text: 'Press P or Enter to slip back in', size: 17, color: MUTE }], BRASS);
+      panel([
+        { text: 'PAUSED', size: 34, bold: true, color: GOLD },
+        { text: 'Press P or Enter to slip back in', size: 17, color: MUTE },
+      ], BRASS);
     } else if (screen === SCREEN_CAUGHT) {
       panel([
         { text: 'CAUGHT!', size: 40, bold: true, color: RED },
@@ -503,7 +512,7 @@ export function createRenderer(canvas) {
     drawWalls(state);
     drawCoin(state);
     for (const camera of state.cameras) drawCamera(state, camera);
-    for (const guard of state.guards) drawGuard(guard);
+    for (const guard of state.guards) drawGuard(state, guard);
     drawThief(state);
     // A red edge creeps in as the alarm climbs: the room itself starts to feel watched.
     if (state.alarm > 45) {
